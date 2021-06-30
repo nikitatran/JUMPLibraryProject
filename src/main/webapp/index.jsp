@@ -7,7 +7,7 @@
 	<!-- 
 			TODO: make sure form action and method are correct
 		 -->
-	<form action="login" method="post">
+	 <form action="login" method="post">
 		<div class="form-group">
 			<label for="username">Username</label> <input type="text"
 				class="form-control" id="username" placeholder="Enter username" />
@@ -26,7 +26,8 @@
 		<button type="submit" class="btn btn-primary">Submit</button>
 
 
-	</form>
+		</form>
+
 
 </div>
 
