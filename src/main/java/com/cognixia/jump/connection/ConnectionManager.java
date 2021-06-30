@@ -1,8 +1,8 @@
 package com.cognixia.jump.connection;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,9 +16,13 @@ public class ConnectionManager {
 	private static void makeConnection() {
 		try {
 			//access the info in our properties file
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			InputStream input = classLoader.getResourceAsStream("com/cognixia/jump/connection/config.properties");
+			
 			Properties props = new Properties();
 			
-			props.load(new FileInputStream("resources/config.properties"));
+			props.load(input);
+			
 			String url = props.getProperty("url");
 			String username = props.getProperty("username");
 			String password = props.getProperty("password");
