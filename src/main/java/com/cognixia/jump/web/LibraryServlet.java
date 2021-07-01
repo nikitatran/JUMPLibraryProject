@@ -153,7 +153,7 @@ public class LibraryServlet extends HttpServlet {
 		PatronsModel user = null;
 		HttpSession session = request.getSession();
 		int patronId = (int) session.getAttribute("patronId");
-		return user;
+		return PATRON_DAO.getPatronById(patronId);
 	}
 	
 	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{
