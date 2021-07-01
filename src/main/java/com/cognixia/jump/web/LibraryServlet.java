@@ -2,6 +2,7 @@ package com.cognixia.jump.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,7 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cognixia.jump.connection.ConnectionManager;
+import com.cognixia.jump.dao.BookDao;
 import com.cognixia.jump.dao.PatronDao;
+import com.cognixia.jump.models.BookModel;
 import com.cognixia.jump.models.PatronsModel;
 import com.mysql.cj.Session;
 
@@ -24,6 +27,7 @@ public class LibraryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private static final PatronDao PATRON_DAO = new PatronDao();
+	private static final BookDao BOOK_DAO = new BookDao();
        
     public LibraryServlet() {
         super();
@@ -50,7 +54,7 @@ public class LibraryServlet extends HttpServlet {
 			case "/dashboard":
 				goToDashboard(request, response);
 				break;
-			case "/books":
+			case "/catalogue":
 				goToAllBooks(request, response);
 				break;
 			case "/user-checkout-history":
@@ -109,7 +113,7 @@ public class LibraryServlet extends HttpServlet {
 	private void goToDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PatronsModel patron = getUserFromSession(request);
 		request.setAttribute("patron", patron);
-		request.getRequestDispatcher("dashboard.jsp").forward(request, response);;
+		request.getRequestDispatcher("dashboard.jsp").forward(request, response);
 	};
 	
 	private void createPatron(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -126,8 +130,9 @@ public class LibraryServlet extends HttpServlet {
 		
 	}
 	
-	private void goToAllBooks(HttpServletRequest request, HttpServletResponse response) {
-		
+	private void goToAllBooks(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setAttribute("allBooks", BOOK_DAO.getAllBooks());
+		request.getRequestDispatcher("books-list.jsp").forward(request, response);
 	}
 	
 	private void setUserToSession(HttpServletRequest request, int patronId) {
