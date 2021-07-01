@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cognixia.jump.connection.ConnectionManager;
+import com.cognixia.jump.dao.PatronDao;
 import com.cognixia.jump.models.PatronsModel;
 import com.mysql.cj.Session;
 
@@ -21,13 +22,11 @@ import com.mysql.cj.Session;
 @WebServlet("/")
 public class LibraryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	private static final PatronDao PATRON_DAO = new PatronDao();
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public LibraryServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -35,16 +34,15 @@ public class LibraryServlet extends HttpServlet {
     	
     }
     
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String action = request.getServletPath();
 		switch (action) {
 			case "/createaccount":
 				goToNewUserForm(request, response);
+				break;
+			case "/add-patron":
+				createPatron(request, response);
 				break;
 			case "/login":
 				login(request, response);
@@ -52,16 +50,17 @@ public class LibraryServlet extends HttpServlet {
 			case "/dashboard":
 				goToDashboard(request, response);
 				break;
+			case "/books":
+				goToAllBooks(request, response);
+				break;
+			case "/user-checkout-history":
+				break;
 			default:
-				response.sendRedirect(request.getContextPath() + "/");
+				goHome(request, response);
 		}
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)	throws ServletException, IOException {
 		doGet(request, response);
 	}
 
@@ -70,61 +69,64 @@ public class LibraryServlet extends HttpServlet {
 		try {
 			ConnectionManager.getConnection().close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	private void goToNewUserForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void goToNewUserForm(HttpServletRequest request, HttpServletResponse response) {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("account-form.jsp");
-		dispatcher.forward(request, response);
+		try {
+			dispatcher.forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		};
 	}
 	
-	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	private void login(HttpServletRequest request, HttpServletResponse response) {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-
-//		-------------------------------------------
-//		TRY TO LOG IN:
-			
-//		-------------------------------------------
-//		IF LOGGED IN, GET ID:
-		int patronId = 3;
-		
-		setUserToSession(request, patronId);
-		
-		response.sendRedirect("dashboard");
+		PatronsModel patron = PATRON_DAO.getPatronByLoginInfo(username, password);
+		try {
+			if (patron != null) {
+				setUserToSession(request, patron.getId());
+				response.sendRedirect("dashboard");
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		goHome(request, response);
+	}
+	
+	private void goHome(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			response.sendRedirect(request.getContextPath() + "/");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void goToDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PatronsModel patron = getUserFromSession(request);
-		System.out.println("patronID: " + patron + "\n\n\n");
 		request.setAttribute("patron", patron);
 		request.getRequestDispatcher("dashboard.jsp").forward(request, response);;
 	};
 	
 	private void createPatron(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		
-		PatronsModel patron = null;
-		
-//	-------------------------------------------
-//		TRY TO CREATE USER:
-		
-//		-------------------------------------------
-//		IF USER CREATED, GET id:
-		int patronId = 2;
-		
-
-		
-		patron = new PatronsModel("New", "User", "newuser", "password", false);
-		
-		if (patron != null) {
-			setUserToSession(request, patronId);
-			response.sendRedirect(request.getContextPath() + "/");
+		String firstName = request.getParameter("first_name");
+		String lastName = request.getParameter("last_name");
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		PatronsModel patron = new PatronsModel(firstName, lastName, username, password, false);
+		if (PATRON_DAO.createPatron(patron)) {
+			login(request, response);
 		} else {
 			response.sendRedirect("createaccount");
 		}
+		
+	}
+	
+	private void goToAllBooks(HttpServletRequest request, HttpServletResponse response) {
 		
 	}
 	
