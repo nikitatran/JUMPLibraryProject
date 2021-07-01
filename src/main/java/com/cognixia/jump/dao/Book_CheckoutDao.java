@@ -132,7 +132,6 @@ public class Book_CheckoutDao {
 						rs.getString("isbn"), 
 						rs.getDate("checkedout"), 
 						rs.getDate("due_date"), 
-						rs.getDate("returned"), 
 						rs.getString("title"), 
 						rs.getString("description"))
 						);
