@@ -100,7 +100,7 @@ public class BookDao {
 			pstmt.setString(3, book.getDescription());
 			pstmt.setBoolean(4, book.isRented());
 			pstmt.setDate(5, book.getAddLib());
-
+			pstmt.setInt(6, book.getIsbn());
 			// at least one row updated
 			if (pstmt.executeUpdate() > 0) {
 				return true;

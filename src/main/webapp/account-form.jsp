@@ -2,7 +2,7 @@
 
 <div class="container">
 	<h1 class="display-3 text-center">Create Account</h1>
-	<form action= "dashboard" method="post">
+	<form action= "add-patron" method="post">
 		<div class="form-group">
 			<label for="firstname">First Name</label> 
 			<input

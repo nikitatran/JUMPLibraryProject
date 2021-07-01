@@ -35,12 +35,12 @@
 					<c:out value="${ book.addLib }" />
 				</td>
 				<td>
-					<c:if test="${ book.rented }">
+					<c:if test="${ !book.rented }">
 					<a href="<%=request.getContextPath() %>/checkout?isbn=<c:out value='${ book.isbn }' />">
 						<button class="btn btn-primary">Checkout</button>
 					</a>
 					</c:if>
-					<c:if test="${ !book.rented }">
+					<c:if test="${ book.rented }">
 						Currently being rented
 					</a>
 					</c:if>

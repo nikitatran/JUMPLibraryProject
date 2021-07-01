@@ -68,6 +68,8 @@ public class LibraryServlet extends HttpServlet {
 			case "/checkout":
 				addToCheckout(request,response);
 				break;
+			case "/return":
+				
 			default:
 				goHome(request, response);
 		}
@@ -126,14 +128,17 @@ public class LibraryServlet extends HttpServlet {
 	};
 	
 	private void createPatron(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String firstName = request.getParameter("first_name");
-		String lastName = request.getParameter("last_name");
+		String firstName = request.getParameter("firstname");
+		String lastName = request.getParameter("lastname");
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		PatronsModel patron = new PatronsModel(firstName, lastName, username, password, false);
+		System.out.println("\n\nNEW PATRON:\n" + patron);
 		if (PATRON_DAO.createPatron(patron)) {
+			System.out.println("PATRON CREATED");
 			login(request, response);
 		} else {
+			System.out.println("NOT CREATED");
 			response.sendRedirect("createaccount");
 		}
 		
@@ -159,21 +164,27 @@ public class LibraryServlet extends HttpServlet {
 	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		String isbn = request.getParameter("isbn"); //isbn
 		int patronId = getUserFromSession(request).getId();
-		//System.out.println("patron id = " + patronId);
-		
-		
+
 		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
-		
 		
 		//get today's date for checkedout param
 		Date checkedoutDate = new Date(currDateInMilli);
 		//get today's date + 7days for due_date param
 		Date dueDate = new Date(currDateInMilli + TimeUnit.DAYS.toMillis(7));
-		
 		Book_CheckoutModel checkout = new Book_CheckoutModel(patronId, isbn, checkedoutDate, dueDate);
 		
+		// update book.rented in database
 		BOOKCHECKOUT_DAO.addBook(checkout);
+		BookModel book = BOOK_DAO.getBookByIsbn(Integer.parseInt(isbn));
+		System.out.println(book);
+		book.setRented(true);
+		System.out.println(book);
+		BOOK_DAO.updateBook(book);
 
-		response.sendRedirect(request.getContextPath() + "/myaccount");
+		response.sendRedirect("catalogue");
+	}
+	
+	private void returnBook(HttpServletRequest request, HttpServletResponse res) {
+		
 	}
 }
