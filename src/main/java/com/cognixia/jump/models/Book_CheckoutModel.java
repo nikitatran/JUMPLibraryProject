@@ -21,14 +21,12 @@ public class Book_CheckoutModel {
 		this.returnedDate = returnedDate;
 	}
 	
-	public Book_CheckoutModel(int patronId, String isbn, Date checkedOutDate, Date dueDate,
-			Date returnedDate) {
+	public Book_CheckoutModel(int patronId, String isbn, Date checkedOutDate, Date dueDate) {
 		super();
 		this.patronId = patronId;
 		this.isbn = isbn;
 		this.checkedOutDate = checkedOutDate;
 		this.dueDate = dueDate;
-		this.returnedDate = returnedDate;
 	}
 
 	public int getCheckoutId() {

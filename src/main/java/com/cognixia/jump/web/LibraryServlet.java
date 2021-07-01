@@ -157,11 +157,11 @@ public class LibraryServlet extends HttpServlet {
 	}
 	
 	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{
-		int isbn = Integer.parseInt(request.getParameter("isbn")); //isbn
-		PatronsModel patron = getUserFromSession(request);
+		String isbn = request.getParameter("isbn"); //isbn
 		int patronId = getUserFromSession(request).getId();
-		System.out.println("patron id = " + patronId);
-		/*
+		//System.out.println("patron id = " + patronId);
+		
+		
 		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
 		
 		
@@ -170,11 +170,10 @@ public class LibraryServlet extends HttpServlet {
 		//get today's date + 7days for due_date param
 		Date dueDate = new Date(currDateInMilli + TimeUnit.DAYS.toMillis(7));
 		
-		Book_CheckoutModel checkout = new Book_CheckoutModel(patronId, getServletInfo(), checkedoutDate, dueDate, dueDate);
+		Book_CheckoutModel checkout = new Book_CheckoutModel(patronId, isbn, checkedoutDate, dueDate);
 		
 		BOOKCHECKOUT_DAO.addBook(checkout);
 
-		response.sendRedirect(request.getContextPath() + "/dashboard");
-		*/
+		response.sendRedirect(request.getContextPath() + "/myaccount");
 	}
 }
