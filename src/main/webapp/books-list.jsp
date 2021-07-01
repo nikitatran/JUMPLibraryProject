@@ -12,7 +12,6 @@
 				<th>ISBN</th>
 				<th>Title</th>
 				<th>Description</th>
-				<th>Currently rented?</th>
 				<th>Date added</th>
 				<th>Checkout</th>
 			</tr>
@@ -33,15 +32,16 @@
 					<c:out value="${ book.description }" />
 				</td>
 				<td>
-					<c:out value="${ book.rented }" />
-				</td>
-				<td>
 					<c:out value="${ book.addLib }" />
 				</td>
 				<td>
 					<c:if test="${ book.rented }">
-					<a href="<%=request.getContextPath() %>/myaccount?id=<c:out value='${ book.isbn }' />">
+					<a href="<%=request.getContextPath() %>/checkout?isbn=<c:out value='${ book.isbn }' />">
 						<button class="btn btn-primary">Checkout</button>
+					</a>
+					</c:if>
+					<c:if test="${ !book.rented }">
+						Currently being rented
 					</a>
 					</c:if>
 				</td>
