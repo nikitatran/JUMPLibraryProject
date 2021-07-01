@@ -63,7 +63,8 @@ public class LibraryServlet extends HttpServlet {
 			case "/catalogue":
 				goToAllBooks(request, response);
 				break;
-			case "/user-checkout-history":
+			case "/myaccount":
+				goToUserBooksPage(request, response);
 				break;
 			case "/checkout":
 				addToCheckout(request,response);
@@ -122,8 +123,7 @@ public class LibraryServlet extends HttpServlet {
 	}
 	
 	private void goToDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PatronsModel patron = getUserFromSession(request);
-		request.setAttribute("patron", patron);
+		setPatronAttributeFromSession(request);
 		request.getRequestDispatcher("dashboard.jsp").forward(request, response);
 	};
 	
@@ -145,8 +145,17 @@ public class LibraryServlet extends HttpServlet {
 	}
 	
 	private void goToAllBooks(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		setPatronAttributeFromSession(request);
 		request.setAttribute("allBooks", BOOK_DAO.getAllBooks());
 		request.getRequestDispatcher("books-list.jsp").forward(request, response);
+	}
+	
+	private void goToUserBooksPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PatronsModel patron = getUserFromSession(request);
+		setPatronAttributeFromSession(request);
+		request.setAttribute("previousBooks", BOOKCHECKOUT_DAO.getPrevCheckedOutBooks(patron.getId()));
+		request.setAttribute("currentBooks", BOOKCHECKOUT_DAO.getPrevCheckedOutBooks(patron.getId()));
+		request.getRequestDispatcher("my-books.jsp").forward(request, response);
 	}
 	
 	private void setUserToSession(HttpServletRequest request, int patronId) {
@@ -159,6 +168,12 @@ public class LibraryServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		int patronId = (int) session.getAttribute("patronId");
 		return PATRON_DAO.getPatronById(patronId);
+	}
+	
+	private void setPatronAttributeFromSession(HttpServletRequest request) {
+		PatronsModel patron = getUserFromSession(request);
+		request.setAttribute("patron", patron);
+		request.setAttribute("issignedin", patron != null);
 	}
 	
 	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{
