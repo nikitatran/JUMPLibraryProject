@@ -11,43 +11,38 @@
 		<thead>
 			<tr>
 				<th>ISBN</th>
+				<th>Checked Out Date</th>
+				<th>Due Date</th>
 				<th>Title</th>
 				<th>Description</th>
-				<th>Currently rented?</th>
-				<th>Date added</th>
-				<th>Checkout</th>
-				<th>Due Date</th>
 			</tr>
 		</thead>
 		
 		<tbody>
 			
-			<c:forEach var="book" items="${allBooks}">
+			<c:forEach var="book" items="${currentBooks}">
 			<tr>
 				<td>
 					<c:out value="${ book.isbn }" />
 				</td>
 				<td>
+					<c:out value="${ book.checkedOutDate }" />
+				</td>
+				<td>
+					<c:out value="${ book.dueDate }" />
+				</td>
+				<td>
 					<c:out value="${ book.title }" />
 				</td>
 				<td>
-					<c:out value="${ book.descr }" />
+					<c:out value="${ book.description }" />
 				</td>
 				<td>
-					<c:out value="${ book.rented }" />
-				</td>
-				<td>
-					<c:out value="${ book.added_to_library }" />
-				</td>
-				<td>
-					<c:if test="${ book.rented == 1 }">
 					<a href="<%=request.getContextPath() %>/myaccount?id=<c:out value='${ book.isbn }' />">
-						<button class="btn btn-primary">Checkout</button>
+						<button class="btn btn-primary">Return</button>
 					</a>
-					</c:if>
-					
 				</td>
-					<c:out value="${ patron.firstName }" />
+					<%-- <c:out value="${ patron.firstName }" /> --%>
 			</tr>
 			</c:forEach>
 		
