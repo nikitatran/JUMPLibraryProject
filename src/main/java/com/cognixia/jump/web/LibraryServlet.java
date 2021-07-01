@@ -154,7 +154,7 @@ public class LibraryServlet extends HttpServlet {
 		PatronsModel patron = getUserFromSession(request);
 		setPatronAttributeFromSession(request);
 		request.setAttribute("previousBooks", BOOKCHECKOUT_DAO.getPrevCheckedOutBooks(patron.getId()));
-		request.setAttribute("currentBooks", BOOKCHECKOUT_DAO.getPrevCheckedOutBooks(patron.getId()));
+		request.setAttribute("currentBooks", BOOKCHECKOUT_DAO.getCurrCheckedOutBooks(patron.getId()));
 		request.getRequestDispatcher("my-books.jsp").forward(request, response);
 	}
 	
@@ -173,7 +173,7 @@ public class LibraryServlet extends HttpServlet {
 	private void setPatronAttributeFromSession(HttpServletRequest request) {
 		PatronsModel patron = getUserFromSession(request);
 		request.setAttribute("patron", patron);
-		request.setAttribute("issignedin", patron != null);
+		request.setAttribute("signedIn", patron != null);
 	}
 	
 	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{

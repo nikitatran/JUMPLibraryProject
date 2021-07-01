@@ -5,6 +5,7 @@
 	<br>
 	<br>
 	
+					<c:out value="${ patron.firstName }" />
 	<table class="table table-striped">
 		
 		<thead>
@@ -46,7 +47,7 @@
 					</c:if>
 					
 				</td>
-					<c:out value="${  }"
+					<c:out value="${ patron.firstName }" />
 			</tr>
 			</c:forEach>
 		
