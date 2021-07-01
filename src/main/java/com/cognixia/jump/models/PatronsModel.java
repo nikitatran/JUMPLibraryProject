@@ -1,21 +1,32 @@
 package com.cognixia.jump.models;
 
 public class PatronsModel {
+	private int patronId;
 	private String firstName;
 	private String lastName;
 	private String userName;
 	private String password;
 	private boolean frozen;
 	
-	public PatronsModel(String firstName, String lastName, String userName, String password, boolean frozen) {
+	public PatronsModel(int patronId, String firstName, String lastName, String username, String password, boolean frozen) {
 		super();
+		this.patronId = patronId;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.userName = userName;
+		this.userName = username;
 		this.password = password;
 		this.frozen = frozen;
 	}
+	public PatronsModel(String firstName, String lastName, String userName, String password, boolean frozen) {
+		this(-1, firstName, lastName, userName, password, frozen);
+	}
 	
+	public int getId() {
+		return patronId;
+	}
+	public void setId(int patronId) {
+		this.patronId = patronId;
+	}
 	public String getFirstName() {
 		return firstName;
 	}
