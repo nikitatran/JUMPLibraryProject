@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cognixia.jump.connection.ConnectionManager;
+import com.cognixia.jump.models.BookModel;
 import com.cognixia.jump.models.Book_CheckoutModel;
+import com.cognixia.jump.models.CheckedOutBooksModel;
 
 public class Book_CheckoutDao {
 	
@@ -17,7 +19,11 @@ public class Book_CheckoutDao {
 	
 	private static final String INSERT_BOOK = "INSERT into book_checkout(patron_id, isbn, checkedout, due_date) values(?, ?, ?, ?)";		//Create book_checkout , book, patron
 	private static final String	UPDATE_BOOK = "UPDATE book_checkout SET isbn = ?, title = ?, desc = ?, rented = ?, added = ?";									//Update
-	private static final String	BOOK_BY_ID = "SELECT * FROM book_checkout WHERE id = ?";									//SelectID
+	private static final String	BOOK_BY_ID = "SELECT * FROM book_checkout WHERE id = ?";								//SelectID
+	
+	private static final String GET_CURRCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NULL";
+	private static final String GET_PREVCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NOT NULL";
+	
 	
 	public boolean addBook(Book_CheckoutModel checkout) {
 		try(PreparedStatement pstmt = connection.prepareStatement(INSERT_BOOK)){
@@ -85,4 +91,59 @@ public class Book_CheckoutDao {
 		
 		return checkout;
 	}
+	
+	public List<CheckedOutBooksModel> getPrevCheckedOutBooks(int patronId){
+		
+		List<CheckedOutBooksModel> prevCheckedOut = new ArrayList<CheckedOutBooksModel>();
+		
+		try(PreparedStatement pstmt = connection.prepareStatement(GET_PREVCHECKEDOUT);){
+			pstmt.setInt(1, patronId);
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				prevCheckedOut.add(new CheckedOutBooksModel(
+						rs.getString("isbn"), 
+						rs.getDate("checkedout"), 
+						rs.getDate("due_date"), 
+						rs.getDate("returned"), 
+						rs.getString("title"), 
+						rs.getString("description"))
+						);
+			}
+			rs.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return prevCheckedOut;
+	}
+	
+	public List<CheckedOutBooksModel> getCurrCheckedOutBooks(int patronId){
+		
+		List<CheckedOutBooksModel> currCheckedOut = new ArrayList<CheckedOutBooksModel>();
+		
+		try(PreparedStatement pstmt = connection.prepareStatement(GET_CURRCHECKEDOUT);){
+			pstmt.setInt(1, patronId);
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				currCheckedOut.add(new CheckedOutBooksModel(
+						rs.getString("isbn"), 
+						rs.getDate("checkedout"), 
+						rs.getDate("due_date"), 
+						rs.getString("title"), 
+						rs.getString("description"))
+						);
+			}
+			rs.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return currCheckedOut;
+	}
+	
+	
 }
