@@ -22,6 +22,7 @@
 			
 			<c:forEach var="book" items="${allBooks}">
 			<tr>
+		
 				<td>
 					<c:out value="${ book.isbn }" />
 				</td>
@@ -29,22 +30,22 @@
 					<c:out value="${ book.title }" />
 				</td>
 				<td>
-					<c:out value="${ book.descr }" />
+					<c:out value="${ book.description }" />
 				</td>
 				<td>
 					<c:out value="${ book.rented }" />
 				</td>
 				<td>
-					<c:out value="${ book.added_to_library }" />
+					<c:out value="${ book.addLib }" />
 				</td>
 				<td>
-					<c:if test="${ book.rented == 1 }">
+					<c:if test="${ book.rented }">
 					<a href="<%=request.getContextPath() %>/myaccount?id=<c:out value='${ book.isbn }' />">
 						<button class="btn btn-primary">Checkout</button>
 					</a>
 					</c:if>
-					
 				</td>
+		
 			</tr>
 			</c:forEach>
 		

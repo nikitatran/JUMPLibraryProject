@@ -41,7 +41,6 @@ public class BookDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return products;
 	}
 	
