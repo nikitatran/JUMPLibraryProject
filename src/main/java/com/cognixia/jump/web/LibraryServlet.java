@@ -1,8 +1,11 @@
 package com.cognixia.jump.web;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,8 +17,10 @@ import javax.servlet.http.HttpSession;
 
 import com.cognixia.jump.connection.ConnectionManager;
 import com.cognixia.jump.dao.BookDao;
+import com.cognixia.jump.dao.Book_CheckoutDao;
 import com.cognixia.jump.dao.PatronDao;
 import com.cognixia.jump.models.BookModel;
+import com.cognixia.jump.models.Book_CheckoutModel;
 import com.cognixia.jump.models.PatronsModel;
 import com.mysql.cj.Session;
 
@@ -28,6 +33,7 @@ public class LibraryServlet extends HttpServlet {
 	
 	private static final PatronDao PATRON_DAO = new PatronDao();
 	private static final BookDao BOOK_DAO = new BookDao();
+	private static final Book_CheckoutDao BOOKCHECKOUT_DAO = new Book_CheckoutDao();
        
     public LibraryServlet() {
         super();
@@ -58,6 +64,9 @@ public class LibraryServlet extends HttpServlet {
 				goToAllBooks(request, response);
 				break;
 			case "/user-checkout-history":
+				break;
+			case "/checkout":
+				addToCheckout(request,response);
 				break;
 			default:
 				goHome(request, response);
@@ -145,5 +154,27 @@ public class LibraryServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		int patronId = (int) session.getAttribute("patronId");
 		return user;
+	}
+	
+	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		int isbn = Integer.parseInt(request.getParameter("isbn")); //isbn
+		PatronsModel patron = getUserFromSession(request);
+		int patronId = getUserFromSession(request).getId();
+		System.out.println("patron id = " + patronId);
+		/*
+		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
+		
+		
+		//get today's date for checkedout param
+		Date checkedoutDate = new Date(currDateInMilli);
+		//get today's date + 7days for due_date param
+		Date dueDate = new Date(currDateInMilli + TimeUnit.DAYS.toMillis(7));
+		
+		Book_CheckoutModel checkout = new Book_CheckoutModel(patronId, getServletInfo(), checkedoutDate, dueDate, dueDate);
+		
+		BOOKCHECKOUT_DAO.addBook(checkout);
+
+		response.sendRedirect(request.getContextPath() + "/dashboard");
+		*/
 	}
 }

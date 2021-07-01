@@ -20,6 +20,16 @@ public class Book_CheckoutModel {
 		this.dueDate = dueDate;
 		this.returnedDate = returnedDate;
 	}
+	
+	public Book_CheckoutModel(int patronId, String isbn, Date checkedOutDate, Date dueDate,
+			Date returnedDate) {
+		super();
+		this.patronId = patronId;
+		this.isbn = isbn;
+		this.checkedOutDate = checkedOutDate;
+		this.dueDate = dueDate;
+		this.returnedDate = returnedDate;
+	}
 
 	public int getCheckoutId() {
 		return checkoutId;
