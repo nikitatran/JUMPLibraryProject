@@ -4,14 +4,14 @@ import java.sql.Date;
 
 public class BookModel {
 	
-	private int isbn;
+	private String isbn;
 	private String title;
 	private String description;
 	private boolean rented;
 	private Date addLib;
 	
 	
-	public BookModel(int isbn, String title, String description, boolean rented, Date addLib) {
+	public BookModel(String isbn, String title, String description, boolean rented, Date addLib) {
 		super();
 		this.isbn = isbn;
 		this.title = title;
@@ -21,12 +21,12 @@ public class BookModel {
 	}
 
 
-	public int getIsbn() {
+	public String getIsbn() {
 		return isbn;
 	}
 
 
-	public void setIsbn(int isbn) {
+	public void setIsbn(String isbn) {
 		this.isbn = isbn;
 	}
 

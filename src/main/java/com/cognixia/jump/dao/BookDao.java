@@ -29,7 +29,7 @@ public class BookDao {
 				ResultSet rs = pstmt.executeQuery();){
 			
 			while (rs.next()) {
-				products.add(new BookModel(rs.getInt("isbn"), 
+				products.add(new BookModel(rs.getString("isbn"), 
 											rs.getString("title"), 
 											rs.getString("descr"), 
 											rs.getBoolean("rented"),
@@ -44,18 +44,18 @@ public class BookDao {
 		return products;
 	}
 	
-	public BookModel getBookByIsbn(int isbn) {
+	public BookModel getBookByIsbn(String isbn) {
 		BookModel book = null;
 		
 		try(PreparedStatement pstmt = connection.prepareStatement(BOOK_BY_ISBN)) {
 			
-			pstmt.setInt(1, isbn);
+			pstmt.setString(1, isbn);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
 			// if product found, if statement run, if not null returned as product
 			if(rs.next()) {
-				int bookIsbn = rs.getInt("isbn");
+				String bookIsbn = rs.getString("isbn");
 				String title = rs.getString("title");
 				String desc = rs.getString("descr");
 				boolean rented = rs.getBoolean("rented");
@@ -74,7 +74,7 @@ public class BookDao {
 	public boolean addBook(BookModel book) {
 		try(PreparedStatement pstmt = connection.prepareStatement(INSERT_BOOK)){
 					//INSERT INTO book(isbn, title, descr, rented, added_to_library) VALUES (?, ?, ?, ?, ?)
-					pstmt.setInt(1, book.getIsbn());
+					pstmt.setString(1, book.getIsbn());
 					pstmt.setString(2, book.getTitle());
 					pstmt.setString(3, book.getDescription());
 					pstmt.setBoolean(4, book.isRented());
@@ -95,12 +95,12 @@ public class BookDao {
 		try (PreparedStatement pstmt = connection.prepareStatement(UPDATE_BOOK)) {
 			//UPDATE book SET isbn = ?, title = ?, descr = ?, rented = ?, added_to_library = ? WHERE isbn = ?
 			
-			pstmt.setInt(1, book.getIsbn());
+			pstmt.setString(1, book.getIsbn());
 			pstmt.setString(2, book.getTitle());
 			pstmt.setString(3, book.getDescription());
 			pstmt.setBoolean(4, book.isRented());
 			pstmt.setDate(5, book.getAddLib());
-			pstmt.setInt(6, book.getIsbn());
+			pstmt.setString(6, book.getIsbn());
 			// at least one row updated
 			if (pstmt.executeUpdate() > 0) {
 				return true;
@@ -113,10 +113,10 @@ public class BookDao {
 		return false;
 	}
 	
-	public boolean deleteBook(int isbn) {
+	public boolean deleteBook(String isbn) {
 		try (PreparedStatement pstmt = connection.prepareStatement(DELETE_BOOK)) {
 			//DELETE FROM book WHERE isbn = ?
-			pstmt.setInt(1, isbn);
+			pstmt.setString(1, isbn);
 
 			// at least one row deleted
 			if (pstmt.executeUpdate() > 0) {
