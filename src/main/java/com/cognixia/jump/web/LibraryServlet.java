@@ -75,8 +75,11 @@ public class LibraryServlet extends HttpServlet {
 			case "/logout":
 				logout(request, response);
 				break;
+			case "/":
+				request.getRequestDispatcher("index.jsp").forward(request, response);
+				break;
 			default:
-				goHome(request, response);
+				show404Page(request, response);
 		}
 	}
 
@@ -91,6 +94,10 @@ public class LibraryServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void show404Page(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.getRequestDispatcher("not-found.jsp").forward(request, response);
 	}
 	
 	private void goToNewUserForm(HttpServletRequest request, HttpServletResponse response) {
@@ -108,7 +115,7 @@ public class LibraryServlet extends HttpServlet {
 		PatronsModel patron = PATRON_DAO.getPatronByLoginInfo(username, password);
 		try {
 			if (patron != null) {
-				setUserToSession(request, patron.getId());
+				saveUserToSession(request, patron.getId());
 				response.sendRedirect("dashboard");
 				return;
 			}
@@ -153,7 +160,7 @@ public class LibraryServlet extends HttpServlet {
 	
 	private void goToUserBooksPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (!authorizeRequest(request, response)) return;
-		int patronId = getUserFromSession(request);
+		int patronId = getUserIdFromSession(request);
 		request.setAttribute("previousBooks", BOOKCHECKOUT_DAO.getPrevCheckedOutBooks(patronId));
 		request.setAttribute("currentBooks", BOOKCHECKOUT_DAO.getCurrCheckedOutBooks(patronId));
 		request.getRequestDispatcher("my-books.jsp").forward(request, response);
@@ -162,7 +169,7 @@ public class LibraryServlet extends HttpServlet {
 	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		if (!authorizeRequest(request, response)) return;
 		String isbn = request.getParameter("isbn"); //isbn
-		int patronId = getUserFromSession(request);
+		int patronId = getUserIdFromSession(request);
 
 		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
 		
@@ -175,22 +182,26 @@ public class LibraryServlet extends HttpServlet {
 		// update book.rented in database
 		BOOKCHECKOUT_DAO.addBook(checkout);
 		BookModel book = BOOK_DAO.getBookByIsbn(isbn);
-		System.out.println(book);
 		book.setRented(true);
-		System.out.println(book);
 		BOOK_DAO.updateBook(book);
 
 		response.sendRedirect("catalogue");
 	}
 	
-	private void returnBook(HttpServletRequest request, HttpServletResponse response) {
+	private void returnBook(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (!authorizeRequest(request, response)) return;
 		String isbn = request.getParameter("isbn"); //isbn
-		int patronId = getUserFromSession(request);
-
+		int patronId = getUserIdFromSession(request);
 		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
 		Date returnedDate = new Date(currDateInMilli);
+		// update book_checkout table record
+		BOOKCHECKOUT_DAO.returnBook(isbn, patronId, returnedDate);
+		// update book.rented
+		BookModel book = BOOK_DAO.getBookByIsbn(isbn);
+		book.setRented(false);
+		BOOK_DAO.updateBook(book);
 		
+		response.sendRedirect("myaccount");
 	}
 	
 	private void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -200,20 +211,18 @@ public class LibraryServlet extends HttpServlet {
 		goHome(request, response);
 	}
 	
-	private void setUserToSession(HttpServletRequest request, int patronId) {
+	private void saveUserToSession(HttpServletRequest request, int patronId) {
 		HttpSession session = request.getSession();
 		session.setAttribute("patronId", patronId);
-		
 	}
-	
-	private int getUserFromSession(HttpServletRequest request) {
+	private int getUserIdFromSession(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		if (session.getAttribute("patronId") == null) return 0;
 		return (int) session.getAttribute("patronId");
 	}
 	
 	private boolean authorizeRequest(HttpServletRequest request, HttpServletResponse response) {
-		int patronId = getUserFromSession(request);
+		int patronId = getUserIdFromSession(request);
 		PatronsModel patron = PATRON_DAO.getPatronById(patronId);
 		if (patron == null) return false;
 		request.setAttribute("patron", patron);
