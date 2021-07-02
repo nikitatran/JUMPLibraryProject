@@ -29,17 +29,14 @@
 				<div class="collapse navbar-collapse" id="navbarNav">
 
 					<ul class="navbar-nav">
-
 						<li class="nav-item"><a class="nav-link"
 							href="<%=request.getContextPath()%>/catalogue">All Books</a></li>
 						<li class="nav-item"><a class="nav-link"
 							href="<%=request.getContextPath()%>/myaccount">My Books</a></li>
-						<li class="nav-item"><a class="nav-link"
-							href="<%=request.getContextPath()%>/dashboard">Dashboard</a></li>
 						<li class=""><a class="nav-link"
 							href="<%=request.getContextPath()%>/updateaccount">Update Account</a></li>
-						<li class="nav-item" style="margin-left: 20px;"><a class="nav-link"
-							href="<%=request.getContextPath()%>/logout">Logout</a></li>
+						<li class="nav-item" style="margin-left: 0px;"><a class="nav-link"
+							href="<%=request.getContextPath()%>/logout" style="color:red">Logout</a></li>
 					</ul>
 
 				</div>
