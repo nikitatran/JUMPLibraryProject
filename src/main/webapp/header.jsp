@@ -36,7 +36,9 @@
 							href="<%=request.getContextPath()%>/myaccount">My Books</a></li>
 						<li class="nav-item"><a class="nav-link"
 							href="<%=request.getContextPath()%>/dashboard">Dashboard</a></li>
-						<li class="nav-item"><a class="nav-link"
+						<li class=""><a class="nav-link"
+							href="<%=request.getContextPath()%>/updateaccount">Update Account</a></li>
+						<li class="nav-item" style="margin-left: 20px;"><a class="nav-link"
 							href="<%=request.getContextPath()%>/logout">Logout</a></li>
 					</ul>
 
