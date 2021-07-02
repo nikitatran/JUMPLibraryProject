@@ -35,7 +35,9 @@
 						<li class="nav-item"><a class="nav-link"
 							href="<%=request.getContextPath()%>/myaccount">My Books</a></li>
 						<li class="nav-item"><a class="nav-link"
-							href="<%=request.getContextPath()%>/dashboard">Back</a></li>
+							href="<%=request.getContextPath()%>/dashboard">Dashboard</a></li>
+						<li class="nav-item"><a class="nav-link"
+							href="<%=request.getContextPath()%>/logout">Logout</a></li>
 					</ul>
 
 				</div>

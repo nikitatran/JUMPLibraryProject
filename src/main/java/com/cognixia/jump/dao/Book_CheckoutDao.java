@@ -133,7 +133,7 @@ public class Book_CheckoutDao {
 						rs.getDate("checkedout"), 
 						rs.getDate("due_date"), 
 						rs.getString("title"), 
-						rs.getString("description"))
+						rs.getString("descr"))
 						);
 			}
 			rs.close();

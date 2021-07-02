@@ -70,7 +70,11 @@ public class LibraryServlet extends HttpServlet {
 				addToCheckout(request,response);
 				break;
 			case "/return":
-				
+				returnBook(request, response);
+				break;
+			case "/logout":
+				logout(request, response);
+				break;
 			default:
 				goHome(request, response);
 		}
@@ -123,7 +127,7 @@ public class LibraryServlet extends HttpServlet {
 	}
 	
 	private void goToDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		setPatronAttributeFromSession(request);
+		if (!authorizeRequest(request, response)) return;
 		request.getRequestDispatcher("dashboard.jsp").forward(request, response);
 	};
 	
@@ -133,52 +137,32 @@ public class LibraryServlet extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		PatronsModel patron = new PatronsModel(firstName, lastName, username, password, false);
-		System.out.println("\n\nNEW PATRON:\n" + patron);
 		if (PATRON_DAO.createPatron(patron)) {
-			System.out.println("PATRON CREATED");
 			login(request, response);
 		} else {
-			System.out.println("NOT CREATED");
 			response.sendRedirect("createaccount");
 		}
 		
 	}
 	
 	private void goToAllBooks(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		setPatronAttributeFromSession(request);
+		if (!authorizeRequest(request, response)) return;
 		request.setAttribute("allBooks", BOOK_DAO.getAllBooks());
 		request.getRequestDispatcher("books-list.jsp").forward(request, response);
 	}
 	
 	private void goToUserBooksPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PatronsModel patron = getUserFromSession(request);
-		setPatronAttributeFromSession(request);
-		request.setAttribute("previousBooks", BOOKCHECKOUT_DAO.getPrevCheckedOutBooks(patron.getId()));
-		request.setAttribute("currentBooks", BOOKCHECKOUT_DAO.getCurrCheckedOutBooks(patron.getId()));
+		if (!authorizeRequest(request, response)) return;
+		int patronId = getUserFromSession(request);
+		request.setAttribute("previousBooks", BOOKCHECKOUT_DAO.getPrevCheckedOutBooks(patronId));
+		request.setAttribute("currentBooks", BOOKCHECKOUT_DAO.getCurrCheckedOutBooks(patronId));
 		request.getRequestDispatcher("my-books.jsp").forward(request, response);
 	}
 	
-	private void setUserToSession(HttpServletRequest request, int patronId) {
-		HttpSession session = request.getSession();
-		session.setAttribute("patronId", patronId);
-	}
-	
-	private PatronsModel getUserFromSession(HttpServletRequest request) {
-		PatronsModel user = null;
-		HttpSession session = request.getSession();
-		int patronId = (int) session.getAttribute("patronId");
-		return PATRON_DAO.getPatronById(patronId);
-	}
-	
-	private void setPatronAttributeFromSession(HttpServletRequest request) {
-		PatronsModel patron = getUserFromSession(request);
-		request.setAttribute("patron", patron);
-		request.setAttribute("signedIn", patron != null);
-	}
-	
 	private void addToCheckout(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		if (!authorizeRequest(request, response)) return;
 		String isbn = request.getParameter("isbn"); //isbn
-		int patronId = getUserFromSession(request).getId();
+		int patronId = getUserFromSession(request);
 
 		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
 		
@@ -190,7 +174,7 @@ public class LibraryServlet extends HttpServlet {
 		
 		// update book.rented in database
 		BOOKCHECKOUT_DAO.addBook(checkout);
-		BookModel book = BOOK_DAO.getBookByIsbn(Integer.parseInt(isbn));
+		BookModel book = BOOK_DAO.getBookByIsbn(isbn);
 		System.out.println(book);
 		book.setRented(true);
 		System.out.println(book);
@@ -199,7 +183,41 @@ public class LibraryServlet extends HttpServlet {
 		response.sendRedirect("catalogue");
 	}
 	
-	private void returnBook(HttpServletRequest request, HttpServletResponse res) {
+	private void returnBook(HttpServletRequest request, HttpServletResponse response) {
+		if (!authorizeRequest(request, response)) return;
+		String isbn = request.getParameter("isbn"); //isbn
+		int patronId = getUserFromSession(request);
+
+		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
+		Date returnedDate = new Date(currDateInMilli);
 		
+	}
+	
+	private void logout(HttpServletRequest request, HttpServletResponse response) {
+		if (!authorizeRequest(request, response)) return;
+		HttpSession session = request.getSession();
+		session.removeAttribute("patronId");
+		goHome(request, response);
+	}
+	
+	private void setUserToSession(HttpServletRequest request, int patronId) {
+		HttpSession session = request.getSession();
+		session.setAttribute("patronId", patronId);
+		
+	}
+	
+	private int getUserFromSession(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		if (session.getAttribute("patronId") == null) return 0;
+		return (int) session.getAttribute("patronId");
+	}
+	
+	private boolean authorizeRequest(HttpServletRequest request, HttpServletResponse response) {
+		int patronId = getUserFromSession(request);
+		PatronsModel patron = PATRON_DAO.getPatronById(patronId);
+		if (patron == null) return false;
+		request.setAttribute("patron", patron);
+		request.setAttribute("signedIn", patron != null);
+		return true;
 	}
 }

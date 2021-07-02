@@ -1,11 +1,12 @@
 <%@ include file= "header.jsp" %>
 
 <div class="container">
-	<h1 class="display-3 text-center">My Books</h1>
+	<h1 class="display-3 text-center">
+		<c:out value="${ patron.firstName }" />'s Books
+	</h1>
 	<br>
 	<br>
 	
-					<c:out value="${ patron.firstName }" />
 	<table class="table table-striped">
 		
 		<thead>
@@ -41,7 +42,7 @@
 				</td>
 				<td>
 					<c:if test="${ book.rented == 1 }">
-					<a href="<%=request.getContextPath() %>/myaccount?id=<c:out value='${ book.isbn }' />">
+					<a href="<%=request.getContextPath() %>/return?id=<c:out value='${ book.isbn }' />">
 						<button class="btn btn-primary">Checkout</button>
 					</a>
 					</c:if>
