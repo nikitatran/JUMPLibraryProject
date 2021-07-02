@@ -21,9 +21,24 @@ public class Book_CheckoutDao {
 	private static final String	UPDATE_BOOK = "UPDATE book_checkout SET isbn = ?, title = ?, desc = ?, rented = ?, added = ?";									//Update
 	private static final String	BOOK_BY_ID = "SELECT * FROM book_checkout WHERE id = ?";								//SelectID
 	
-	private static final String GET_CURRCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NULL";
-	private static final String GET_PREVCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NOT NULL";
+	private static final String GET_CURRCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NULL ORDER BY due_date desc";
+	private static final String GET_PREVCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NOT NULL ORDER BY returned desc";
 	
+	private static final String RETURN_BOOK = "update book_checkout set returned = ? where isbn = ? and patron_id = ?";
+	
+	public boolean returnBook(String isbn, int patronId, Date returnedDate) {
+		try (PreparedStatement pstmt = connection.prepareStatement(RETURN_BOOK)) {
+			pstmt.setDate(1, returnedDate);
+			pstmt.setString(2, isbn);
+			pstmt.setInt(3, patronId);
+			if (pstmt.executeUpdate() > 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
 	public boolean addBook(Book_CheckoutModel checkout) {
 		try(PreparedStatement pstmt = connection.prepareStatement(INSERT_BOOK)){

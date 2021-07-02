@@ -1,12 +1,14 @@
 <%@ include file="header.jsp"%>
 
 <div class="container">
-	<h1 class="display-3 text-center">My Books</h1>
-	<br> <br>
+	<h1 class="display-3 text-center">
+		<c:out value="${ patron.firstName }" />'s Books
+	</h1>
 
-	<%--<c:out value="${ patron.firstName }" /> --%>
-
+	<br><br>
+	
 	<h2 class="display-6">Currently Checked Out</h2>
+	
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -27,10 +29,9 @@
 					<td><c:out value="${ book.title }" /></td>
 					<td><c:out value="${ book.description }" /></td>
 					<td><a
-						href="<%=request.getContextPath() %>/myaccount?isbn=<c:out value='${ book.isbn }' />">
+						href="<%=request.getContextPath() %>/return?isbn=<c:out value='${ book.isbn }' />">
 							<button class="btn btn-primary">Return</button>
 					</a></td>
-					<%-- <c:out value="${ patron.firstName }" /> --%>
 				</tr>
 			</c:forEach>
 
