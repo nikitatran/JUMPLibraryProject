@@ -78,6 +78,12 @@ public class LibraryServlet extends HttpServlet {
 			case "/":
 				request.getRequestDispatcher("index.jsp").forward(request, response);
 				break;
+			case "/updateaccount":
+				goToUpdateAccount(request, response);
+				break;
+			case "/update-patron":
+				updateAccount(request, response);
+				break;
 			default:
 				show404Page(request, response);
 		}
@@ -100,13 +106,9 @@ public class LibraryServlet extends HttpServlet {
 		request.getRequestDispatcher("not-found.jsp").forward(request, response);
 	}
 	
-	private void goToNewUserForm(HttpServletRequest request, HttpServletResponse response) {
+	private void goToNewUserForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("account-form.jsp");
-		try {
-			dispatcher.forward(request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-		};
+		dispatcher.forward(request, response);
 	}
 	
 	private void login(HttpServletRequest request, HttpServletResponse response) {
@@ -149,7 +151,25 @@ public class LibraryServlet extends HttpServlet {
 		} else {
 			response.sendRedirect("createaccount");
 		}
-		
+	}
+	
+	private void goToUpdateAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (!authorizeRequest(request, response)) return;
+		goToNewUserForm(request, response);
+	}
+	
+	private void updateAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (!authorizeRequest(request, response)) return;
+		PatronsModel patron = (PatronsModel) request.getAttribute("patron");
+		patron.setFirstName(request.getParameter("firstname"));
+		patron.setLastName(request.getParameter("lastname"));
+		patron.setUserName(request.getParameter("username"));
+		patron.setPassword(request.getParameter("password"));
+		if (PATRON_DAO.updatePatron(patron)) {
+			goToDashboard(request, response);
+		} else {
+			goToUpdateAccount(request, response);
+		}
 	}
 	
 	private void goToAllBooks(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

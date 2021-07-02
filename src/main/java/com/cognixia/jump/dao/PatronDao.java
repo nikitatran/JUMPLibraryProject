@@ -49,7 +49,8 @@ public class PatronDao {
 			String lastName = rs.getString("last_name");
 			String username = rs.getString("username");
 			boolean frozen = rs.getBoolean("account_frozen");
-			patron = new PatronsModel(patronId, firstName, lastName, username, null, frozen);
+			String password = rs.getString("password");
+			patron = new PatronsModel(patronId, firstName, lastName, username, password, frozen);
 		}
 		return patron;
 	}
