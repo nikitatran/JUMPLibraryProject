@@ -23,8 +23,8 @@ public class Book_CheckoutDao {
 	
 	private static final String GET_CURRCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NULL ORDER BY due_date desc";
 	private static final String GET_PREVCHECKEDOUT = "select * from book_checkout left join book on book_checkout.isbn = book.isbn where patron_id = ? AND returned IS NOT NULL ORDER BY returned desc";
-	
-	private static final String RETURN_BOOK = "update book_checkout set returned = ? where isbn = ? and patron_id = ?";
+
+	private static final String RETURN_BOOK = "UPDATE book_checkout SET returned = ? WHERE isbn = ? AND patron_id = ? AND returned IS NULL"; // mark return date
 	
 	public boolean returnBook(String isbn, int patronId, Date returnedDate) {
 		try (PreparedStatement pstmt = connection.prepareStatement(RETURN_BOOK)) {

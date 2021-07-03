@@ -3,18 +3,21 @@
 
 <%
 	PatronsModel patron = (PatronsModel) request.getAttribute("patron");
-	String heading, formAction, firstName = "", lastName = "", username = "", password = "";
+	String heading, formAction, firstName = "", lastName = "", username = "", password = "", actionName;
 	if (patron == null) {
 		heading = "Create Account";
+		actionName = "Creation";
 		formAction = "add-patron";
 	} else {
 		heading = "Update Account";
+		actionName = "Update";
 		formAction = "update-patron";
 		firstName = patron.getFirstName();
 		lastName = patron.getLastName();
 		username = patron.getUserName();
 		password = patron.getPassword();
 	}
+	boolean fail = request.getAttribute("fail") != null;
 %>
 
 <script>
@@ -26,6 +29,15 @@
 	<h1 class="display-3 text-center p-4">
 		<%= heading %>
 	</h1>
+	
+	<% if (fail) { %>
+		<div class="alert alert-danger text-center" role="alert">
+			<h3 class="display-5 text-center">Account <%= actionName %> Failed</h3>
+			<p style="margin: 0.3rem 0;">NInvalid form submission.</p>
+			<p style="margin: 0;">Please try again.</p>
+		</div>
+	<% } %>
+	
 	<form action="<%= formAction %>" method="post">
 		<div class="form-group">
 			<label for="firstname">First Name</label> 

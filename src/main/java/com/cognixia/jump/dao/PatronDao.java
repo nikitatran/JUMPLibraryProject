@@ -10,7 +10,7 @@ import com.cognixia.jump.models.PatronsModel;
 
 public class PatronDao {
 
-	public static final Connection conn = ConnectionManager.getConnection();
+	private static final Connection conn = ConnectionManager.getConnection();
 	
 	private static final String PATRON_BY_ID = "SELECT * FROM patron WHERE patron_id = ?";
 	private static final String PATRON_BY_CREDENTIALS = "SELECT * FROM patron WHERE username = ? AND password = ?";
@@ -34,7 +34,8 @@ public class PatronDao {
 			pstmt.setString(1, username);
 			pstmt.setString(2, password);
 			ResultSet rs = pstmt.executeQuery();
-			return getPatronFromResultSet(rs);
+			PatronsModel patron = getPatronFromResultSet(rs);
+			return (patron != null && patron.getPassword().equals(password)) ? patron : null;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
