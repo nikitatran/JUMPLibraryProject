@@ -23,7 +23,7 @@
 </script>
 
 <div class="container">
-	<h1 class="display-3 text-center">
+	<h1 class="display-3 text-center p-4">
 		<%= heading %>
 	</h1>
 	<form action="<%= formAction %>" method="post">

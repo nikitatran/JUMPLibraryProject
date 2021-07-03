@@ -1,11 +1,9 @@
 <%@ include file="header.jsp"%>
 
 <div class="container">
-	<h1 class="display-3 text-center">
+	<h1 class="display-3 text-center p-4">
 		<c:out value="${ patron.firstName }" />'s Books
 	</h1>
-
-	<br><br>
 	
 	<h2 class="display-6">Currently Checked Out</h2>
 	

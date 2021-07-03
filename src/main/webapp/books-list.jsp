@@ -1,9 +1,8 @@
 <%@ include file= "header.jsp" %>
 
 <div class="container">
-	<h1 class="display-3 text-center">Books List</h1>
-	<br>
-	<br>
+	<h1 class="display-3 text-center p-4">Books List</h1>
+
 	
 	<table class="table table-striped">
 		

@@ -141,10 +141,10 @@ public class LibraryServlet extends HttpServlet {
 	};
 	
 	private void createPatron(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String firstName = request.getParameter("firstname");
-		String lastName = request.getParameter("lastname");
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
+		String firstName = request.getParameter("firstname").trim();
+		String lastName = request.getParameter("lastname").trim();
+		String username = request.getParameter("username").trim();
+		String password = request.getParameter("password").trim();
 		PatronsModel patron = new PatronsModel(firstName, lastName, username, password, false);
 		if (PATRON_DAO.createPatron(patron)) {
 			login(request, response);
@@ -161,10 +161,10 @@ public class LibraryServlet extends HttpServlet {
 	private void updateAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (!authorizeRequest(request, response)) return;
 		PatronsModel patron = (PatronsModel) request.getAttribute("patron");
-		patron.setFirstName(request.getParameter("firstname"));
-		patron.setLastName(request.getParameter("lastname"));
-		patron.setUserName(request.getParameter("username"));
-		patron.setPassword(request.getParameter("password"));
+		patron.setFirstName(request.getParameter("firstname").trim());
+		patron.setLastName(request.getParameter("lastname").trim());
+		patron.setUserName(request.getParameter("username").trim());
+		patron.setPassword(request.getParameter("password").trim());
 		if (PATRON_DAO.updatePatron(patron)) {
 			goToDashboard(request, response);
 		} else {
