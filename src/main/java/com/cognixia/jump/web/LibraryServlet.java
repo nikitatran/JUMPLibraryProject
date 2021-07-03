@@ -105,7 +105,7 @@ public class LibraryServlet extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 	
-	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		PatronsModel patron = PATRON_DAO.getPatronByLoginInfo(username, password);
@@ -118,7 +118,8 @@ public class LibraryServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		goHome(request, response);
+		request.setAttribute("fail", true);
+		request.getRequestDispatcher("index.jsp").forward(request, response);
 	}
 	
 	private void goHome(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -130,7 +131,7 @@ public class LibraryServlet extends HttpServlet {
 		request.getRequestDispatcher("dashboard.jsp").forward(request, response);
 	};
 	
-	private void createPatron(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void createPatron(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String firstName = request.getParameter("firstname");
 		String lastName = request.getParameter("lastname");
 		String username = request.getParameter("username");
@@ -139,7 +140,8 @@ public class LibraryServlet extends HttpServlet {
 		if (PATRON_DAO.createPatron(patron)) {
 			login(request, response);
 		} else {
-			response.sendRedirect("createaccount");
+			request.setAttribute("fail", true);
+			request.getRequestDispatcher("account-form.jsp").forward(request, response);
 		}
 	}
 	
@@ -158,6 +160,7 @@ public class LibraryServlet extends HttpServlet {
 		if (PATRON_DAO.updatePatron(patron)) {
 			goToDashboard(request, response);
 		} else {
+			request.setAttribute("fail", true);
 			goToUpdateAccount(request, response);
 		}
 	}

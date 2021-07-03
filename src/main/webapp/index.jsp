@@ -1,13 +1,20 @@
 <%@ include file="header.jsp"%>
 
+<% boolean fail = request.getAttribute("fail") != null; %>
+
 <div class="container">
 
 	<h1 class="display-3 text-center">Library Login</h1>
 
-	<!-- 
-			TODO: make sure form action and method are correct
-		 -->
-	 <form action="login" method="post">
+	<% if (fail) { %>
+		<div class="alert alert-danger text-center" role="alert">
+			<h3 class="display-5 text-center">Login Failed</h3>
+			<p style="margin: 0.3rem 0;">No user could be found for that username and password combination.</p>
+			<p style="margin: 0;">Please try again.</p>
+		</div>
+	<% } %>
+	
+	<form action="login" method="post">
 		<div class="form-group">
 			<label for="username">Username</label> <input type="text"
 				name="username" class="form-control" id="username" placeholder="Enter username" />
@@ -25,8 +32,7 @@
 
 		<button type="submit" class="btn btn-primary">Submit</button>
 
-
-		</form>
+	</form>
 
 
 </div>
