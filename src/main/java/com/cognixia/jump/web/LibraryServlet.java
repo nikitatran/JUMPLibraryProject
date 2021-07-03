@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.RequestDispatcher;
@@ -22,7 +21,6 @@ import com.cognixia.jump.dao.PatronDao;
 import com.cognixia.jump.models.BookModel;
 import com.cognixia.jump.models.Book_CheckoutModel;
 import com.cognixia.jump.models.PatronsModel;
-import com.mysql.cj.Session;
 
 /**
  * Servlet implementation class LibraryServlet
@@ -85,7 +83,7 @@ public class LibraryServlet extends HttpServlet {
 				updateAccount(request, response);
 				break;
 			default:
-				show404Page(request, response);
+				request.getRequestDispatcher("not-found.jsp").forward(request, response);
 		}
 	}
 
@@ -102,16 +100,12 @@ public class LibraryServlet extends HttpServlet {
 		}
 	}
 	
-	private void show404Page(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.getRequestDispatcher("not-found.jsp").forward(request, response);
-	}
-	
 	private void goToNewUserForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("account-form.jsp");
 		dispatcher.forward(request, response);
 	}
 	
-	private void login(HttpServletRequest request, HttpServletResponse response) {
+	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		PatronsModel patron = PATRON_DAO.getPatronByLoginInfo(username, password);
@@ -127,12 +121,8 @@ public class LibraryServlet extends HttpServlet {
 		goHome(request, response);
 	}
 	
-	private void goHome(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			response.sendRedirect(request.getContextPath() + "/");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private void goHome(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.sendRedirect(request.getContextPath() + "/");
 	}
 	
 	private void goToDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -224,7 +214,7 @@ public class LibraryServlet extends HttpServlet {
 		response.sendRedirect("myaccount");
 	}
 	
-	private void logout(HttpServletRequest request, HttpServletResponse response) {
+	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (!authorizeRequest(request, response)) return;
 		HttpSession session = request.getSession();
 		session.removeAttribute("patronId");
@@ -241,10 +231,13 @@ public class LibraryServlet extends HttpServlet {
 		return (int) session.getAttribute("patronId");
 	}
 	
-	private boolean authorizeRequest(HttpServletRequest request, HttpServletResponse response) {
+	private boolean authorizeRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		int patronId = getUserIdFromSession(request);
 		PatronsModel patron = PATRON_DAO.getPatronById(patronId);
-		if (patron == null) return false;
+		if (patron == null) {
+			goHome(request, response);
+			return false;
+		}
 		request.setAttribute("patron", patron);
 		request.setAttribute("signedIn", patron != null);
 		return true;

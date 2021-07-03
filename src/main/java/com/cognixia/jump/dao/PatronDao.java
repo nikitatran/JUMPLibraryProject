@@ -34,7 +34,8 @@ public class PatronDao {
 			pstmt.setString(1, username);
 			pstmt.setString(2, password);
 			ResultSet rs = pstmt.executeQuery();
-			return getPatronFromResultSet(rs);
+			PatronsModel patron = getPatronFromResultSet(rs);
+			return patron.getPassword().equals(password) ? patron : null;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
