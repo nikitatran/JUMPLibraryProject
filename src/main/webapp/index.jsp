@@ -29,7 +29,7 @@
 
 		<div class="row justify-content-between">
 			<div class="col-6 text-left">
-				<a class="btn btn-secondary" href="<%=request.getContextPath()%>/createaccount">
+				<a href="<%=request.getContextPath()%>/createaccount">
 					<span class="text-secondary">Create a new account</span>
 				</a>
 			</div>
