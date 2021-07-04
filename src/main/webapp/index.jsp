@@ -7,7 +7,10 @@
 	<h1 class="display-3 text-center p-5">Library Login</h1>
 
 	<% if (fail) { %>
-		<div class="alert alert-danger text-center" role="alert">
+		<div class="alert alert-danger text-center alert-dismissable fade show" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    			<span aria-hidden="true">&times;</span>
+  			</button>
 			<h3 class="display-5 text-center">Login Failed</h3>
 			<p style="margin: 0.3rem 0;">No user could be found for that username and password combination.</p>
 			<p style="margin: 0;">Please try again.</p>
@@ -18,13 +21,13 @@
 		<div class="form-group">
 			<label for="username">Username</label> <input type="text"
 				name="username" class="form-control" id="username"
-				placeholder="Enter username" required/>
+				placeholder="Enter username"/>
 		</div>
 
 		<div class="form-group">
 			<label for="password">Password</label> <input type="password"
 				name="password" class="form-control" id="password"
-				placeholder="Password" required>
+				placeholder="Password">
 		</div>
 
 		<div class="row justify-content-between">
