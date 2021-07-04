@@ -33,8 +33,7 @@
 	<% if (fail) { %>
 		<div class="alert alert-danger text-center" role="alert">
 			<h3 class="display-5 text-center">Account <%= actionName %> Failed</h3>
-			<p style="margin: 0.3rem 0;">NInvalid form submission.</p>
-			<p style="margin: 0;">Please try again.</p>
+			<p style="margin: 0.3rem 0 0;">Invalid form submission. Please try again.</p>
 		</div>
 	<% } %>
 	
