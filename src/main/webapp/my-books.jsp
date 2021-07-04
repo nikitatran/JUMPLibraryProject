@@ -1,5 +1,7 @@
 <%@ include file="header.jsp"%>
 
+<% String tableMsgStyle = "font-size: 1.1em; font-style: italic; text-align: center;"; %>
+
 <div class="container">
 	<h1 class="display-3 text-center p-4">
 		<c:out value="${ patron.firstName }" />'s Books
@@ -36,6 +38,12 @@
 		</tbody>
 	</table>
 	
+	<c:if test="${ currentBooks == null || currentBooks.size() == 0 }">
+		<p class="display-6" style="<%= tableMsgStyle %>">
+			You don't have any books checked out at this time.
+		</p>
+	</c:if>
+	
 	<br />
 	<br />
 	<br />
@@ -68,9 +76,12 @@
 
 		</tbody>
 	</table>
-
-
-
+	
+	<c:if test="${ previousBooks == null || previousBooks.size() == 0 }">
+		<p class="display-6" style="<%= tableMsgStyle %>">
+			You haven't checked out any books yet.
+		</p>
+	</c:if>
 
 </div>
 
