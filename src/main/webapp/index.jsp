@@ -22,6 +22,7 @@
 			<label for="username">Username</label> <input type="text"
 				name="username" class="form-control" id="username"
 				placeholder="Enter username"/>
+
 		</div>
 
 		<div class="form-group">
