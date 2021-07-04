@@ -57,6 +57,17 @@ public class PatronsModel {
 	public void setFrozen(boolean frozen) {
 		this.frozen = frozen;
 	}
+	
+	public boolean isValidInfo() {
+		String[] attrs = { firstName, lastName, userName, password };
+		for (String attrVal : attrs) {
+			if (attrVal == null || attrVal.equals("")) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 
 	@Override
 	public String toString() {

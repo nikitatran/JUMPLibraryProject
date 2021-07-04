@@ -137,7 +137,7 @@ public class LibraryServlet extends HttpServlet {
 		String username = request.getParameter("username").trim();
 		String password = request.getParameter("password");
 		PatronsModel patron = new PatronsModel(firstName, lastName, username, password, false);
-		if (PATRON_DAO.createPatron(patron)) {
+		if (patron.isValidInfo() && PATRON_DAO.createPatron(patron)) {
 			login(request, response);
 		} else {
 			request.setAttribute("fail", true);
@@ -157,7 +157,7 @@ public class LibraryServlet extends HttpServlet {
 		patron.setLastName(request.getParameter("lastname").trim());
 		patron.setUserName(request.getParameter("username").trim());
 		patron.setPassword(request.getParameter("password").trim());
-		if (PATRON_DAO.updatePatron(patron)) {
+		if (patron.isValidInfo() && PATRON_DAO.updatePatron(patron)) {
 			goToDashboard(request, response);
 		} else {
 			request.setAttribute("fail", true);
