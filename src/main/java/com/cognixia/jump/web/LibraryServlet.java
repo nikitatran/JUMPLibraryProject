@@ -135,7 +135,7 @@ public class LibraryServlet extends HttpServlet {
 		String firstName = request.getParameter("firstname").trim();
 		String lastName = request.getParameter("lastname").trim();
 		String username = request.getParameter("username").trim();
-		String password = request.getParameter("password");
+		String password = request.getParameter("password").trim();
 		PatronsModel patron = new PatronsModel(firstName, lastName, username, password, false);
 		if (patron.isValidInfo() && PATRON_DAO.createPatron(patron)) {
 			login(request, response);

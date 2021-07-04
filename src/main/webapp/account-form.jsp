@@ -31,9 +31,12 @@
 	</h1>
 	
 	<% if (fail) { %>
-		<div class="alert alert-danger text-center" role="alert">
+		<div class="alert alert-danger text-center alert-dismissable fade show" role="alert">
+		 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    			<span aria-hidden="true">&times;</span>
+  			</button>
 			<h3 class="display-5 text-center">Account <%= actionName %> Failed</h3>
-			<p style="margin: 0.3rem 0 0;">Invalid form submission. Please try again.</p>
+			<p style="margin: 0.3rem 0 0;">Invalid form submission. Do not leave any fields blank. Please try again.</p>
 		</div>
 	<% } %>
 	
@@ -43,7 +46,7 @@
 			<input
 				type="text" class="form-control" id="firstname"
 				name="firstname" placeholder="Enter your first name"
-				value="<%= firstName %>"
+				value="<%= firstName %>" pattern="^.{3,}$" title="at least 3 characters long"
 			>
 		</div>
 		
@@ -52,7 +55,8 @@
 			<input
 				type="text" class="form-control" id="lastname"
 				name="lastname" placeholder="Enter your last name"
-				value="<%= lastName %>">
+				value="<%= lastName %>" pattern="^.{3,}$" title="at least 3 characters long" 
+				oninput="setCustomValidity('')">
 		</div>
 		
 		<div class="form-group">
@@ -60,7 +64,7 @@
 			<input
 				type="text" class="form-control" id="username"
 				name="username" placeholder="New username"
-				value="<%= username %>">
+				value="<%= username %>" pattern="^.{3,}$" title="at least 3 characters long">
 		</div>
 		
 		<div class="form-group">
@@ -68,7 +72,7 @@
 			<input
 				type="password" class="form-control" id="password"
 				name="password" placeholder="New password"
-				value="<%= password %>">
+				value="<%= password %>" pattern="^.{3,}$" title="at least 3 characters long">
 		</div>
 		
 		<button type="submit" class="btn btn-primary">Submit</button>
