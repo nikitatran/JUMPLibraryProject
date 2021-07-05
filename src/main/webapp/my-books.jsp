@@ -12,7 +12,7 @@
 				<th>ISBN</th>
 				<th class="dateColumn">Checked Out Date</th>
 				<th class="dateColumn">Due Date</th>
-				<th>Title</th>
+				<th class="titleColumn">Title</th>
 				<th>Description</th>
 			</tr>
 		</thead>
@@ -23,7 +23,7 @@
 					<td><c:out value="${ book.isbn }" /></td>
 					<td class="dateColumn"><c:out value="${ book.checkedOutDate }" /></td>
 					<td class="dateColumn"><c:out value="${ book.dueDate }" /></td>
-					<td><c:out value="${ book.title }" /></td>
+					<td class="titleColumn"><c:out value="${ book.title }" /></td>
 					<td><c:out value="${ book.description }" /></td>
 					<td><a
 						href="<%=request.getContextPath() %>/return?isbn=<c:out value='${ book.isbn }' />">
@@ -53,7 +53,7 @@
 				<th class="dateColumn">Checked Out Date</th>
 				<th class="dateColumn">Due Date</th>
 				<th class="dateColumn">Returned Date</th>
-				<th>Title</th>
+				<th class="titleColumn">Title</th>
 				<th>Description</th>
 			</tr>
 		</thead>
@@ -65,7 +65,7 @@
 					<td class="dateColumn"><c:out value="${ book.checkedOutDate }" /></td>
 					<td class="dateColumn"><c:out value="${ book.dueDate }" /></td>
 					<td class="dateColumn"><c:out value="${ book.returnedDate }" /></td>
-					<td><c:out value="${ book.title }" /></td>
+					<td class="titleColumn"><c:out value="${ book.title }" /></td>
 					<td><c:out value="${ book.description }" /></td>
 					
 				</tr>

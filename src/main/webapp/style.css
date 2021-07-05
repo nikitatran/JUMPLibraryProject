@@ -7,5 +7,18 @@
 @media screen and (min-width: 767px) {
 	.dateColumn {
 		min-width: 108px;
-	}	
+	}
+	.titleColumn {
+		min-width: 90px;
+	}
 }
+
+@media screen and (min-width: 992px) {
+	.dateColumn {
+		min-width: 108px;
+	}
+	.titleColumn {
+		min-width: 120px;
+	}
+}
+
