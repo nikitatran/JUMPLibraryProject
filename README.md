@@ -1,8 +1,17 @@
 # Assignment: Library Project
 
 A website for a library where you can login as a librarian a patron who can checkout and return books. Utilizes JDBC, Servlets, JSPs, and Maven.
+
 By Nikita Tran, David Knittel, Austin Brooks for Cognixia Full Stack Java course
 
+## IMPORTANT
+Please add a file titled `config.properties` in the **com.cognixia.jump.connection** package in src/main/java with the following contents:
+```
+url=jdbc:mysql://localhost:[port]/[database name]
+username=
+password=
+```
+(Do not put spaces after the `=`)
 ## Completed Requirements for Patron User 
 - [x] Sign up for an account via form
 
