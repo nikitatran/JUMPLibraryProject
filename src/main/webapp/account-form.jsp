@@ -18,12 +18,9 @@
 		password = patron.getPassword();
 	}
 	boolean fail = request.getAttribute("fail") != null;
+	String failMessage = (String) request.getAttribute("failMessage");
+	if (failMessage == null) failMessage = "Invalid form submission. Do not leave any fields blank. Please try again.";
 %>
-
-<script>
-	console.log("username: ", "<%= username %>");
-	console.log("password: ", "<%= password %>");
-</script>
 
 <div class="container">
 	<h1 class="display-3 text-center p-4">
@@ -36,7 +33,7 @@
     			<span aria-hidden="true">&times;</span>
   			</button>
 			<h3 class="display-5 text-center">Account <%= actionName %> Failed</h3>
-			<p style="margin: 0.3rem 0 0;">Invalid form submission. Do not leave any fields blank. Please try again.</p>
+			<p style="margin: 0.3rem 0 0;"><%= failMessage %></p>
 		</div>
 	<% } %>
 	
@@ -46,7 +43,7 @@
 			<input
 				type="text" class="form-control" id="firstname"
 				name="firstname" placeholder="Enter your first name"
-				value="<%= firstName %>" pattern="^.{3,}$" title="at least 3 characters long"
+				value="<%= firstName %>" required
 			>
 		</div>
 		
@@ -55,7 +52,7 @@
 			<input
 				type="text" class="form-control" id="lastname"
 				name="lastname" placeholder="Enter your last name"
-				value="<%= lastName %>" pattern="^.{3,}$" title="at least 3 characters long" 
+				value="<%= lastName %>" pattern="^.{2,}$" title="at least 2 characters long" 
 				oninput="setCustomValidity('')">
 		</div>
 		
@@ -72,7 +69,7 @@
 			<input
 				type="password" class="form-control" id="password"
 				name="password" placeholder="New password"
-				value="<%= password %>" pattern="^.{3,}$" title="at least 3 characters long">
+				value="<%= password %>" pattern="^.{4,}$" title="at least 4 characters long">
 		</div>
 		
 		<button type="submit" class="btn btn-primary">Submit</button>
