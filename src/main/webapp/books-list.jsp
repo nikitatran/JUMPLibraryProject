@@ -11,7 +11,7 @@
 				<th>ISBN</th>
 				<th>Title</th>
 				<th>Description</th>
-				<th>Date added</th>
+				<th class="dateColumn">Date added</th>
 				<th>Checkout</th>
 			</tr>
 		</thead>
@@ -30,7 +30,7 @@
 				<td>
 					<c:out value="${ book.description }" />
 				</td>
-				<td>
+				<td class="dateColumn">
 					<c:out value="${ book.addLib }" />
 				</td>
 				<td>

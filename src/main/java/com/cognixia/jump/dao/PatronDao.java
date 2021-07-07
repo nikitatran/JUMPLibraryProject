@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cognixia.jump.connection.ConnectionManager;
 import com.cognixia.jump.models.PatronsModel;
 
@@ -57,11 +59,18 @@ public class PatronDao {
 	}
 	
 	public boolean createPatron(PatronsModel patron) {
+		return createPatron(patron, null);
+	}
+	public boolean createPatron(PatronsModel patron, HttpServletRequest request) {
 		return createPatron(
-			patron.getFirstName(), patron.getLastName(), patron.getUserName(), patron.getPassword(), patron.isFrozen()
+			patron.getFirstName(), patron.getLastName(), patron.getUserName(),
+				patron.getPassword(), patron.isFrozen(), request
 		);
 	}
 	public boolean createPatron(String firstName, String lastName, String username, String password, boolean account_frozen) {
+		return createPatron(firstName, lastName, username, password, account_frozen, null);
+	}
+	public boolean createPatron(String firstName, String lastName, String username, String password, boolean account_frozen, HttpServletRequest request) {
 		try (PreparedStatement pstmt = conn.prepareStatement(CREATE_PATRON)) {
 			pstmt.setString(1, firstName);
 			pstmt.setString(2, lastName);
@@ -70,12 +79,20 @@ public class PatronDao {
 			pstmt.setBoolean(5, account_frozen);
 			if (pstmt.executeUpdate() > 0) return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (isDuplicateUsernameException(e) && request != null) {
+				request.setAttribute("failMessage", getDuplicateUsernameFailMsg(username));
+				System.out.println("exception: " + e.getMessage());
+			}
+			else e.printStackTrace();
 		}
 		return false;
 	}
 	
 	public boolean updatePatron(PatronsModel patron) {
+		return updatePatron(patron, null);
+	}
+	
+	public boolean updatePatron(PatronsModel patron, HttpServletRequest request) {
 		try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_PATRON)) {
 			pstmt.setString(1, patron.getFirstName());
 			pstmt.setString(2, patron.getLastName());
@@ -85,7 +102,11 @@ public class PatronDao {
 			pstmt.setInt(6, patron.getId());
 			return (pstmt.executeUpdate() > 0);
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (isDuplicateUsernameException(e) && request != null) {
+				request.setAttribute("failMessage", getDuplicateUsernameFailMsg(patron.getUserName()));
+				System.out.println("exception: " + e.getMessage());
+			}
+			else e.printStackTrace();
 		}
 		return false;
 	}
@@ -98,5 +119,21 @@ public class PatronDao {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	private boolean isDuplicateUsernameException(Exception e) {
+		String errMsg = e.getMessage();
+		String lcErrMsg = errMsg == null ? null : errMsg.toLowerCase();
+		if (errMsg != null && lcErrMsg.contains("duplicate") && lcErrMsg.contains("username")) {
+			return true;
+		}
+		return false;
+	}
+	
+	private String getDuplicateUsernameFailMsg(String username) {
+		return (
+			"That username is unavailable. There is already a user with the username \"" +
+			username + "\"."
+		);
 	}
 }

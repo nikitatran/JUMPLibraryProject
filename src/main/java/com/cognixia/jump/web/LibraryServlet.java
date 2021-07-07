@@ -118,7 +118,9 @@ public class LibraryServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		request.setAttribute("fail", true);
+		if (request.getMethod().equals("POST")) { // (only show fail message when responding to form submission, not when method used simply to load page
+			request.setAttribute("fail", true);
+		}
 		request.getRequestDispatcher("index.jsp").forward(request, response);
 	}
 	
@@ -132,17 +134,21 @@ public class LibraryServlet extends HttpServlet {
 	};
 	
 	private void createPatron(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		String firstName = request.getParameter("firstname").trim();
-		String lastName = request.getParameter("lastname").trim();
-		String username = request.getParameter("username").trim();
-		String password = request.getParameter("password").trim();
+		String firstName = trimInput(request.getParameter("firstname"));
+		String lastName = trimInput(request.getParameter("lastname"));
+		String username = trimInput(request.getParameter("username"));
+		String password = trimInput(request.getParameter("password"));
 		PatronsModel patron = new PatronsModel(firstName, lastName, username, password, false);
-		if (patron.isValidInfo() && PATRON_DAO.createPatron(patron)) {
+		if (patron.isValidInfo() && PATRON_DAO.createPatron(patron, request)) {
 			login(request, response);
 		} else {
 			request.setAttribute("fail", true);
 			request.getRequestDispatcher("account-form.jsp").forward(request, response);
 		}
+		if (request.getMethod().equals("POST")) { // (only show fail message when responding to form submission, not when method used simply to load page
+			request.setAttribute("fail", true);
+		}
+		request.getRequestDispatcher("account-form.jsp").forward(request, response);
 	}
 	
 	private void goToUpdateAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -153,16 +159,18 @@ public class LibraryServlet extends HttpServlet {
 	private void updateAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (!authorizeRequest(request, response)) return;
 		PatronsModel patron = (PatronsModel) request.getAttribute("patron");
-		patron.setFirstName(request.getParameter("firstname").trim());
-		patron.setLastName(request.getParameter("lastname").trim());
-		patron.setUserName(request.getParameter("username").trim());
-		patron.setPassword(request.getParameter("password").trim());
-		if (patron.isValidInfo() && PATRON_DAO.updatePatron(patron)) {
+		patron.setFirstName(trimInput(request.getParameter("firstname")));
+		patron.setLastName(trimInput(request.getParameter("lastname")));
+		patron.setUserName(trimInput(request.getParameter("username")));
+		patron.setPassword(trimInput(request.getParameter("password")));
+		if (patron.isValidInfo() && PATRON_DAO.updatePatron(patron, request)) {
 			goToDashboard(request, response);
-		} else {
-			request.setAttribute("fail", true);
-			goToUpdateAccount(request, response);
+			return;
 		}
+		if (request.getMethod().equals("POST")) {
+			request.setAttribute("fail", true);
+		}
+		goToUpdateAccount(request, response);
 	}
 	
 	private void goToAllBooks(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -185,7 +193,6 @@ public class LibraryServlet extends HttpServlet {
 		int patronId = getUserIdFromSession(request);
 
 		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
-		
 		//get today's date for checkedout param
 		Date checkedoutDate = new Date(currDateInMilli);
 		//get today's date + 7days for due_date param
@@ -230,7 +237,7 @@ public class LibraryServlet extends HttpServlet {
 	}
 	private int getUserIdFromSession(HttpServletRequest request) {
 		HttpSession session = request.getSession();
-		if (session.getAttribute("patronId") == null) return 0;
+		if (session.getAttribute("patronId") == null) return -1;
 		return (int) session.getAttribute("patronId");
 	}
 	
@@ -242,7 +249,11 @@ public class LibraryServlet extends HttpServlet {
 			return false;
 		}
 		request.setAttribute("patron", patron);
-		request.setAttribute("signedIn", patron != null);
+		request.setAttribute("signedIn", true);
 		return true;
+	}
+	
+	private String trimInput(String rawInput) {
+		return rawInput == null ? rawInput : rawInput.trim();
 	}
 }

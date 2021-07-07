@@ -1,21 +1,25 @@
 <%@ include file="header.jsp"%>
 
-<% boolean fail = request.getAttribute("fail") != null;%>
+<%
+	boolean fail = request.getAttribute("fail") != null;
+	String failMessage = (String) request.getAttribute("failMessage");
+	if (failMessage == null) failMessage = "No user could be found for that username and password combination.";
+%>
 
 
 <script type="text/javascript">
 function showAlertBanner(){
 	var x = document.getElementById("alertbanner");
-	  if (x.style.display === "none") {
-	    x.style.display = "block";
-	    document.getElementById("message").innerHTML = "Please fill out all required fields."; 
-	  } 
+	if (x && x.style && x.style.display === "none") {
+	  x.style.display = "block";
+	  // document.getElementById("message").innerHTML = "Please fill out all required fields."; 
+	} 
 }
 function hideAlertBanner(){
 	var x = document.getElementById("alertbanner");
-	  if (x.style.display === "block") {
-	    x.style.display = "none";
-	  }
+	if (x && x.style && x.style.display === "block") {
+	  x.style.display = "none";
+	}
 }
 </script>
 
@@ -29,24 +33,25 @@ function hideAlertBanner(){
     			<span aria-hidden="true">&times;</span>
   			</button>
 			<h3 class="display-5 text-center">Login Failed</h3>
-			<p id="message" style="margin: 0.3rem 0;">No user could be found for that username and password combination.</p>
+			<p id="message" style="margin: 0.3rem 0;"><%= failMessage %></p>
 			<p style="margin: 0;">Please try again.</p>
 		</div>
 	<% } %>
 	
 	<form action="login" method="post">
 		<div class="form-group">
-			<label for="username">Username</label> <input type="text"
+			<label for="username">Username</label>
+			<input type="text"
 				name="username" class="form-control" id="username"
 				placeholder="Enter username" required
 				oninvalid="showAlertBanner()"
 				onvalid="this.setCustomValidity('')"
-				>
-
+			>
 		</div>
 
 		<div class="form-group">
-			<label for="password">Password</label> <input type="password"
+			<label for="password">Password</label>
+			<input type="password"
 				name="password" class="form-control" id="password"
 				placeholder="Password" required
 				oninvalid="showAlertBanner()"
