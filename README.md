@@ -1,6 +1,6 @@
 # Assignment: Library Project
 
-A website for a library where you can login as a librarian a patron who can checkout and return books. Utilizes JDBC, Servlets, JSPs, and Maven.
+A website for a library where you can login as a patron who can checkout and return books. Utilizes JDBC, Servlets, JSPs, and Maven.
 
 By Nikita Tran, David Knittel, Austin Brooks for Cognixia Full Stack Java course
 
