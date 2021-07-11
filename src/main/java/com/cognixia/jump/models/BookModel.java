@@ -1,6 +1,7 @@
 package com.cognixia.jump.models;
 
 import java.sql.Date;
+import java.time.ZonedDateTime;
 
 public class BookModel {
 	
@@ -18,6 +19,15 @@ public class BookModel {
 		this.description = description;
 		this.rented = rented;
 		this.addLib = addLib;
+	}
+	
+	public static BookModel createNewBook(String isbn, String title, String description) {
+		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
+		Date today = new Date(currDateInMilli);
+		return new BookModel(isbn, title, description, false, today);
+	}
+	public static BookModel createNewBook() {
+		return createNewBook(null, null, null);
 	}
 
 

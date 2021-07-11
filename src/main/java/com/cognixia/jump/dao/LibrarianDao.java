@@ -38,7 +38,7 @@ public class LibrarianDao {
 			pstmt.setString(2, password);
 			ResultSet rs = pstmt.executeQuery();
 			LibrarianModel librarian = getLibrarianFromResultSet(rs);
-			if (librarian == null || librarian.getPassword() != password) {
+			if (librarian == null || !password.equals(librarian.getPassword())) {
 				return null;
 			}
 			return librarian;

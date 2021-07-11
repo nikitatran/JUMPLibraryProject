@@ -21,6 +21,7 @@ import com.cognixia.jump.dao.PatronDao;
 import com.cognixia.jump.models.BookModel;
 import com.cognixia.jump.models.Book_CheckoutModel;
 import com.cognixia.jump.models.PatronsModel;
+import com.cognixia.jump.service.CheckoutAndReturnService;
 
 /**
  * Servlet implementation class LibraryServlet
@@ -191,20 +192,7 @@ public class LibraryServlet extends HttpServlet {
 		if (!authorizeRequest(request, response)) return;
 		String isbn = request.getParameter("isbn"); //isbn
 		int patronId = getUserIdFromSession(request);
-
-		long currDateInMilli = ZonedDateTime.now().toInstant().toEpochMilli();
-		//get today's date for checkedout param
-		Date checkedoutDate = new Date(currDateInMilli);
-		//get today's date + 7days for due_date param
-		Date dueDate = new Date(currDateInMilli + TimeUnit.DAYS.toMillis(7));
-		Book_CheckoutModel checkout = new Book_CheckoutModel(patronId, isbn, checkedoutDate, dueDate);
-		
-		// update book.rented in database
-		BOOKCHECKOUT_DAO.addBook(checkout);
-		BookModel book = BOOK_DAO.getBookByIsbn(isbn);
-		book.setRented(true);
-		BOOK_DAO.updateBook(book);
-
+		CheckoutAndReturnService.checkoutBook(isbn, patronId);
 		response.sendRedirect("catalogue");
 	}
 	
