@@ -1,6 +1,6 @@
 # Assignment: Library Project
 
-A website for a library where you can login as a librarian a patron who can checkout and return books. Utilizes JDBC, Servlets, JSPs, and Maven.
+A website for a library where you can login as a patron who can checkout and return books. Utilizes JDBC, Servlets, JSPs, and Maven.
 
 By Nikita Tran, David Knittel, Austin Brooks for Cognixia Full Stack Java course
 
@@ -34,6 +34,6 @@ Librarian
 
 ## Extra features 
 - User input verification on forms (error banner when bad input is submitted)
-  - Bad input = empty fields, user/pass nonexistant in database (login page); empty fields or less than 3 characters (create/update account page)
+  - Bad input = empty fields, user/pass nonexistant in database (login page); duplicate username, last name < 2 characters, username < 3, password < 4 (create/update account page)
 - 404 error page
 - Landing page with slideshow/carousel upon log-in
