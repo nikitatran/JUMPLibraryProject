@@ -45,6 +45,9 @@ public class LibraryServlet extends HttpServlet {
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		if (ConnectionManager.getConnection() == null) {
+			request.getRequestDispatcher("db-error.jsp").forward(request, response);
+		}
 		String action = request.getServletPath();
 		switch (action) {
 			case "/createaccount":
