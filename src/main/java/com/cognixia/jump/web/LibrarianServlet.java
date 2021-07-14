@@ -1,8 +1,6 @@
 package com.cognixia.jump.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -52,12 +50,24 @@ public class LibrarianServlet extends HttpServlet {
 			return;
 		}
 		
-		if (!authorizeRequest(request, response)) return;
+//		if (!authorizeRequest(request, response)) return;
 		
 		switch (action) {
 		// Paths corresponding to pages > > >
+			case "/t1":
+				request.getRequestDispatcher(request.getServletPath()).forward(request, response);
+				break;
+			case "/t2":
+				response.sendRedirect(request.getServletPath());
+				break;
+			case "/t3":
+				response.sendRedirect(request.getRequestURL().toString() + "/..");
+				break;
+			case "/t4":
+				request.getRequestDispatcher(request.getRequestURL().toString() + "/..").forward(request, response);
+				break;
 			case "/updateaccount":
-				authorizeReqAndGoTo("account-form.jsp", request, response);
+				goToLibnAccountForm(request, response);
 				break;
 			case "/dashboard":
 				goToLibnDash(request, response);
@@ -73,6 +83,15 @@ public class LibrarianServlet extends HttpServlet {
 				break;
 			case "/selectpatron": // for book-checkout
 				goToSelectPatronForCheckout(request, response);
+				break;
+			case "/patron-account":
+				// patron account form, but maybe only allow password update and not other attributes of patrons. 
+				break;
+			case "/new-book":
+				goToAddBookForm(request, response);
+				break;
+			case "/book-information":
+				goToUpdateBookForm(request, response);
 				break;
 		// Paths requesting action(s) to be performed on data, (and then a page is returned) > > >
 			case "/logout":
@@ -94,8 +113,13 @@ public class LibrarianServlet extends HttpServlet {
 				returnBookForPatron(request, response);
 				break;
 			case "/add-book":
+				createBook(request, response);
 				break;
 			case "/update-book":
+				updateBook(request, response);
+				break;
+			case "/reset-patron-password":
+				// ? ?
 				break;
 			default:
 				goToPath("not-found.jsp", request, response);
@@ -261,7 +285,7 @@ public class LibrarianServlet extends HttpServlet {
 	}
 	
 	private void updateBook(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		BookModel book = BookModel.createNewBook();
+		BookModel book = BOOK_DAO.getBookByIsbn(request.getParameter("isbn"));
 		book.setTitle(trimInput(request.getParameter("title")));
 		book.setDescription(trimInput(request.getParameter("description")));
 		if (BOOK_DAO.updateBook(book)) {
@@ -280,11 +304,6 @@ public class LibrarianServlet extends HttpServlet {
 		String prefix = "";
 		if (path.charAt(0) != '/') prefix += "../";
 		request.getRequestDispatcher(prefix + path).forward(request, response);
-	}
-	
-	private void authorizeReqAndGoTo(String path, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (!authorizeRequest(request, response)) return;
-		goToPath(path, request, response);
 	}
 	
 	private void saveUserToSession(HttpServletRequest request, int librarianId) {

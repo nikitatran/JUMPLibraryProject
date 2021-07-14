@@ -43,16 +43,17 @@ public class AppProperties {
 	private static void makeInstance() {
 		try {
 			makeInstance("com/cognixia/jump/config/config.properties");
-		} catch(Exception e) {
-			new Exception("\nFAILED TO READ `config.properties`from `config` package.").printStackTrace();
+		} catch(Exception e1) {
+			e1.printStackTrace();
+			System.out.println("* * * FAILED TO READ `config.properties`FROM `config` PACKAGE! --- ^ ^ ^");
 			try {
 				makeInstance("com/cognixia/jump/connection/config.properties");
 			} catch (Exception e2) {
-				new Exception("\nFAILED TO READ `config.properties`from `connection` package.").printStackTrace();
+				e2.printStackTrace();
+				new Exception("* * * FAILED TO READ `config.properties`FROM `connection` PACKAGE! --- ^ ^ ^");
 			}
 		}
 	}
-	
 	private static void makeInstance(String filePath) throws IOException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		InputStream input = classLoader.getResourceAsStream(filePath);

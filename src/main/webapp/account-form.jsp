@@ -2,6 +2,8 @@
 <%@ include file="header.jsp"%>
 
 <%
+	boolean isLibrarian = request.getAttribute("isLibrarian") != null;
+
 	PatronsModel patron = (PatronsModel) request.getAttribute("patron");
 	String heading, formAction, firstName = "", lastName = "", username = "", password = "", actionName;
 	if (patron == null) {
