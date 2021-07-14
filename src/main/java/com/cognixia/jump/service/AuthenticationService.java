@@ -10,60 +10,68 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cognixia.jump.dao.LibrarianDao;
 import com.cognixia.jump.dao.PatronDao;
+import com.cognixia.jump.dao.UserDao;
+import com.cognixia.jump.models.UserWithId;
 import com.cognixia.jump.models.PatronsModel;
 
+/* ABOUT THIS CLASS:
+ * 	- Purpose is to prevent repetition in code between servlet files and separate authentication logic from other parts of the program.
+ * 	- This class is LIKE a singleton, except it has 3 instances instead of 1.
+ */
 public class AuthenticationService {
 
-	private static AuthenticationService patronService = new AuthenticationService();
+	private static AuthenticationService patronInstance = null;
+	private static AuthenticationService librarianInstance = null;
+	private static AuthenticationService adminInstance = null;
 	
-	private PatronDao PATRON_DAO = new PatronDao();
-	private UserTypes userType;
-
 	private static enum UserTypes { PATRON, LIBRARIAN, ADMIN }
 	
+	private UserTypes userType;
+	private UserDao dao;
+	
+// ==========================================================
+// Constructors >>> --------------------------------------
+		
 	private AuthenticationService(UserTypes userType) {
 		this.userType = userType;
+		if (userType == UserTypes.PATRON) dao = new PatronDao();
+		else if (userType == UserTypes.LIBRARIAN) dao = new LibrarianDao();
+		else dao = new AdminMockDao(); // <-- No DB connection (not really a DAO). Mimics DAOs of other user types so interface is the same
 	}
 	private AuthenticationService() {
 		this(UserTypes.PATRON);
 	}
 	
-	private String getIdAttrName() {
-		return getIdAttrName(this.userType);
+// ==========================================================
+// Static getters to get instance corresponding to user type >>>
+	
+	public static AuthenticationService getPatronAuthService() {
+		if (patronInstance == null) patronInstance = new AuthenticationService(UserTypes.PATRON);
+		return patronInstance;
 	}
-	private String getIdAttrName(UserTypes type) {
-		return getUserDataObjAttrName(type) + "Id";
+	public static AuthenticationService getLibrarianAuthService() {
+		if (librarianInstance == null) librarianInstance = new AuthenticationService(UserTypes.LIBRARIAN);
+		return librarianInstance;
+	}
+	public static AuthenticationService getAdminAuthService() {
+		if (adminInstance == null) adminInstance = new AuthenticationService(UserTypes.ADMIN);
+		return adminInstance;
 	}
 	
-	private String getUserDataObjAttrName() {
-		return getUserDataObjAttrName(this.userType);
-	}
-	private String getUserDataObjAttrName(UserTypes type) {
-		return type.name().toLowerCase();
-	}
-	
-	private Object findUserDataObj(String username, String password) {
-		if (this.userType == UserTypes.ADMIN) {
-//			return AdminAuthenticator
-		} else if (this.userType == UserTypes.LIBRARIAN) {
-			
-		} else {
-			
-		}
-		return null;
-	}
-	
-//	NOT DONE *************
-	private void login(HttpServletRequest request, HttpServletResponse response)
+// ===========================================================
+// Public instance methods
+
+	public void login(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String idAttrName = getIdAttrName();
-		PatronsModel patron = PATRON_DAO.getPatronByLoginInfo(username, password);
+		UserWithId user = dao.getByCredentials(username, password);
 		try {
-			if (patron != null) {
-				saveUserToSession(request, patron.getId());
+			if (user != null) {
+				saveUserToSession(request, user.getId());
 				response.sendRedirect("dashboard");
 				return;
 			}
@@ -76,28 +84,18 @@ public class AuthenticationService {
 		request.getRequestDispatcher("index.jsp").forward(request, response);
 	}
 	
-	private void saveUserToSession(HttpServletRequest request, int userId) {
-		HttpSession session = request.getSession();
-		session.setAttribute(getIdAttrName(), userId);
-	}
-	private int getUserIdFromSession(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		String idAttrName = getIdAttrName();
-		if (session.getAttribute(idAttrName) == null) return -1;
-		return (int) session.getAttribute(idAttrName);
-	}
-	
 //	NOT DONE *************
 	private boolean authorizeRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		System.out.println("REQUEST SERVLET PATH:\n  > > > >>>> " + request.getServletPath());
-		int patronId = getUserIdFromSession(request);
-		Object user = PATRON_DAO.getPatronById(patronId);
+		int userId = getUserIdFromSession(request);
+		UserWithId user = dao.getById(userId);
 		if (user == null) {
 			response.sendRedirect(request.getServletPath());
 			return false;
 		}
 		request.setAttribute(getUserDataObjAttrName(), user);
 		request.setAttribute("signedIn", true);
+		request.setAttribute(getIsTypeAttrName(), true);
 		return true;
 	}
 	
@@ -109,6 +107,37 @@ public class AuthenticationService {
 			session.removeAttribute(getIdAttrName(type));
 		}
 		response.sendRedirect("../");
+	}
+	
+// ===========================================================
+// Private instance methods
+
+	private String getUserDataObjAttrName(UserTypes type) {
+		return type.name().toLowerCase();
+	}
+	private String getUserDataObjAttrName() {
+		return getUserDataObjAttrName(this.userType);
+	}
+	private String getIdAttrName(UserTypes type) {
+		return getUserDataObjAttrName(type) + "Id";
+	}
+	private String getIdAttrName() {
+		return getIdAttrName(this.userType);
+	}
+	private String getIsTypeAttrName() {
+		String lcTypeName = getUserDataObjAttrName();
+		return "is" + lcTypeName.substring(0, 1).toUpperCase() + lcTypeName.substring(1);
+	}
+	
+	private void saveUserToSession(HttpServletRequest request, int userId) {
+		HttpSession session = request.getSession();
+		session.setAttribute(getIdAttrName(), userId);
+	}
+	private int getUserIdFromSession(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		String idAttrName = getIdAttrName();
+		if (session.getAttribute(idAttrName) == null) return -1;
+		return (int) session.getAttribute(idAttrName);
 	}
 	
 }

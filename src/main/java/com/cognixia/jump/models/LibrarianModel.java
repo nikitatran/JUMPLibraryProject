@@ -1,6 +1,6 @@
 package com.cognixia.jump.models;
 
-public class LibrarianModel {
+public class LibrarianModel implements UserWithId {
 	
 	private int id;
 	private String username;
@@ -16,6 +16,7 @@ public class LibrarianModel {
 		this(-1, username, password);
 	}
 	
+	@Override
 	public int getId() {
 		return id;
 	}

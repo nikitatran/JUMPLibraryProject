@@ -9,8 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cognixia.jump.connection.ConnectionManager;
 import com.cognixia.jump.models.PatronsModel;
+import com.cognixia.jump.models.UserWithId;
 
-public class PatronDao {
+public class PatronDao implements UserDao {
 
 	private static final Connection conn = ConnectionManager.getConnection();
 	
@@ -20,7 +21,8 @@ public class PatronDao {
 	private static final String UPDATE_PATRON = "UPDATE patron SET first_name = ?, last_name = ?, username = ?, password = ?, account_frozen = ? WHERE patron_id = ?";
 	private static final String DELETE_PATRON = "DELETE FROM patron WHERE patron_id = ?";
 	
-	public PatronsModel getPatronById(int patronId) {
+	@Override
+	public UserWithId getById(int patronId) {
 		try (PreparedStatement pstmt = conn.prepareStatement(PATRON_BY_ID)) {
 			pstmt.setInt(1, patronId);
 			ResultSet rs = pstmt.executeQuery();
@@ -31,7 +33,8 @@ public class PatronDao {
 		return null;
 	}
 	
-	public PatronsModel getPatronByLoginInfo(String username, String password) {
+	@Override
+	public PatronsModel getByCredentials(String username, String password) {
 		try (PreparedStatement pstmt = conn.prepareStatement(PATRON_BY_CREDENTIALS)) {
 			pstmt.setString(1, username);
 			pstmt.setString(2, password);

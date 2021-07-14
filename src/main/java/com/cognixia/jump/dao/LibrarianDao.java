@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cognixia.jump.connection.ConnectionManager;
 import com.cognixia.jump.models.LibrarianModel;
 
-public class LibrarianDao {
+public class LibrarianDao implements UserDao {
 
 	private static final Connection conn = ConnectionManager.getConnection();
 	
@@ -21,6 +21,7 @@ public class LibrarianDao {
 	private static final String UPDATE_LIBRARIAN = "UPDATE librarian SET username = ?, password = ? WHERE librarian_id = ?";
 	private static final String DELETE_LIBRARIAN = "DELETE FROM librarian WHERE librarian_id = ?";
 	
+	@Override
 	public LibrarianModel getById(int id) {
 		try (PreparedStatement pstmt = conn.prepareStatement(GET_BY_ID)) {
 			pstmt.setInt(1, id);
@@ -32,6 +33,7 @@ public class LibrarianDao {
 		return null;
 	}
 	
+	@Override
 	public LibrarianModel getByCredentials(String username, String password) {
 		try (PreparedStatement pstmt = conn.prepareStatement(GET_BY_CREDENTIALS)) {
 			pstmt.setString(1, username);

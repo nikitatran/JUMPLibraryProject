@@ -1,6 +1,6 @@
 package com.cognixia.jump.models;
 
-public class PatronsModel {
+public class PatronsModel implements UserWithId {
 	private int patronId;
 	private String firstName;
 	private String lastName;
@@ -20,7 +20,8 @@ public class PatronsModel {
 	public PatronsModel(String firstName, String lastName, String userName, String password, boolean frozen) {
 		this(-1, firstName, lastName, userName, password, frozen);
 	}
-	
+
+	@Override
 	public int getId() {
 		return patronId;
 	}
